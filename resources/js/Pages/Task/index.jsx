@@ -2,15 +2,15 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, router } from '@inertiajs/react';
 import Pagination from './../../Components/pagination';
 import { 
-    PROJECT_STATUS_CLASS_MAP,
-    PROJECT_STATUS_TEXT_MAP
+    TASK_STATUS_CLASS_MAP,
+    TASK_STATUS_TEXT_MAP
  } from '@/constants.jsx';
 import TextInput from '@/Components/TextInput';
 import TableHeading from '@/Components/TableHeading';
 import SelectInput from '@/Components/SelectInput';
 
 
-export default function index({auth,projects,queryParams=null}) {
+export default function index({auth,tasks,queryParams=null}) {
     queryParams=queryParams || {};
     const searchFieldChanged=(name,value)=>{
         if(value){
@@ -18,7 +18,7 @@ export default function index({auth,projects,queryParams=null}) {
         }else{
             delete queryParams[name]
         }
-        router.get(route('project.index'),queryParams);
+        router.get(route('task.index'),queryParams);
     }
 
     const onKeyPress=(name,e)=>{
@@ -39,7 +39,7 @@ export default function index({auth,projects,queryParams=null}) {
             queryParams.sort_field=name;
             queryParams.sort_direction='asc'
         }
-        router.get(route('project.index'),queryParams);
+        router.get(route('task.index'),queryParams);
     }
     
 
@@ -49,11 +49,11 @@ export default function index({auth,projects,queryParams=null}) {
         user={auth.user}
         header={
             <h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
-                Projects
+                Tasks
             </h2>
         }
         >
-            <Head title="Projects"/>
+            <Head title="Tasks"/>
             <div className="py-12">
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg dark:bg-gray-800">
@@ -116,7 +116,7 @@ export default function index({auth,projects,queryParams=null}) {
                                         <TextInput
                                         className="w-full"
                                         defaultValue={queryParams.name || ''}
-                                        placeholder="Project Name"
+                                        placeholder="Task Name"
                                         onBlur={e => searchFieldChanged('name', e.target.value)}
                                         onKeyPress={e => onKeyPress('name', e)}
                                         />
@@ -143,34 +143,34 @@ export default function index({auth,projects,queryParams=null}) {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {projects.data.map((project)=>(
+                                    {tasks.data.map((task)=>(
                                     <tr 
-                                    key={project.id}
+                                    key={task.id}
                                     className='bg-white border-b
                                     dark:bg-gray-800 dark:border-gray-700'>
-                                    <td className='px-3 py-2 '>{project.id}</td>
+                                    <td className='px-3 py-2 '>{task.id}</td>
                                     <td className='px-3 py-2 '>
-                                        <img src={project.image_path} style={{width:60}}/>
+                                        <img src={task.image_path} style={{width:60}}/>
                                     </td>
-                                    <td className='px-3 py-2 '>{project.name}</td>
+                                    <td className='px-3 py-2 '>{task.name}</td>
                                     <td className='px-3 py-2 '>
                                         <span
-                                        className={`px-2 py-1 rounded text-white ${PROJECT_STATUS_CLASS_MAP[project.status]}`}
+                                        className={`px-2 py-1 rounded text-white ${TASK_STATUS_CLASS_MAP[task.status]}`}
                                         >
-                                        {PROJECT_STATUS_TEXT_MAP[project.status]}
+                                        {TASK_STATUS_TEXT_MAP[task.status]}
                                         </span>
                                         </td>
-                                    <td className='px-3 py-2 text-nowrap '>{project.created_at}</td>
-                                    <td className='px-3 py-2 text-nowrap'>{project.due_date}</td>
-                                    <td className='px-3 py-2 '>{project.createdBy.name}</td>
+                                    <td className='px-3 py-2 text-nowrap '>{task.created_at}</td>
+                                    <td className='px-3 py-2 text-nowrap'>{task.due_date}</td>
+                                    <td className='px-3 py-2 '>{task.createdBy.name}</td>
                                     <td className='px-3 py-2 '>
-                                        <Link href={route('project.edit',project.id)}
+                                        <Link href={route('task.edit',task.id)}
                                         className='font-medium text-blue-600 dark:text-blue-500
                                         hover:underline mx-1'                                       
                                         >
                                         Edit
                                         </Link>
-                                        <Link href={route('project.destroy',project.id)}
+                                        <Link href={route('task.destroy',task.id)}
                                         className='font-medium text-red-600 dark:text-red-500
                                         hover:underline mx-1'                                       
                                         >
@@ -183,7 +183,7 @@ export default function index({auth,projects,queryParams=null}) {
                             </table> 
                                 
                                 </div>                      
-                           <Pagination Links={projects.meta.links}/>
+                           <Pagination Links={tasks.meta.links}/>
                         </div>
                     </div>
                 </div>
