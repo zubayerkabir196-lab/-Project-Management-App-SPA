@@ -6,6 +6,7 @@ use App\Models\Project;
 use App\Http\Resources\ProjectResource;
 use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
+use Inertia\Inertia;
 
 class ProjectController extends Controller
 {
@@ -29,7 +30,7 @@ class ProjectController extends Controller
 
         $projects=$query->orderBy($sortField,$sortDirection)
         ->paginate(10)->onEachSide(1);
-        return inertia('Project/index',[   
+        return inertia('Project/Index',[   
             "projects"=>ProjectResource::collection($projects), 
             'queryParams'=>request()->query() ?:null,  
         ]);
@@ -56,7 +57,9 @@ class ProjectController extends Controller
      */
     public function show(Project $project)
     {
-        //
+        return inertia('Project/Show',[
+            'project'=>new ProjectResource($project)
+        ]);
     }
 
     /**
