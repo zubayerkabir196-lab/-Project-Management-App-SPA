@@ -28,3 +28,14 @@ export const PROJECT_STATUS_CLASS_MAP = {
     medium: "Medium",
     high: "High",
   };
+  export const USER_STATUS_CLASS_MAP = {
+    active: "bg-green-500",
+    inactive: "bg-gray-500",
+    pending: "bg-amber-500",
+  };
+  
+  export const USER_STATUS_TEXT_MAP = {
+    active: "Active",
+    inactive: "Inactive",
+    pending: "Pending",
+  };

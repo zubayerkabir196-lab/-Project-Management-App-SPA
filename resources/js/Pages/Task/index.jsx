@@ -1,6 +1,6 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head,Link} from '@inertiajs/react';
-import Pagination from './../../Components/pagination';
+import Pagination from './../../Components/Pagination';
 
 import TextInput from '@/Components/TextInput';
 import TableHeading from '@/Components/TableHeading';

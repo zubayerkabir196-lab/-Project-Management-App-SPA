@@ -1,7 +1,7 @@
 import TableHeading from '@/Components/TableHeading';
 import SelectInput from '@/Components/SelectInput';
 import TextInput from '@/Components/TextInput';
-import Pagination from './../../Components/pagination';
+import Pagination from './../../Components/Pagination';
 import { Link, router } from '@inertiajs/react';
 import { 
     TASK_STATUS_CLASS_MAP,
