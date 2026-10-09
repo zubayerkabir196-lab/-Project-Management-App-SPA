@@ -48,6 +48,11 @@ export default function Index({ auth, projects, queryParams = null, success }) {
         router.get(route('project.index'), queryParams);
     };
 
+    // If the image is missing (404), hide it instead of showing broken alt text
+    const hideBrokenImage = (e) => {
+        e.currentTarget.style.visibility = 'hidden';
+    };
+
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -67,14 +72,16 @@ export default function Index({ auth, projects, queryParams = null, success }) {
         >
             <Head title="Projects" />
             <div className="py-6 sm:py-12">
-                <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
+                <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
                     {success && (
                         <div className="mb-4 rounded bg-emerald-500 px-4 py-2 text-white">
                             {success}
                         </div>
                     )}
-                    <div className="overflow-hidden bg-white shadow-sm dark:bg-gray-800 sm:rounded-lg">
-                        <div className="p-4 text-gray-900 dark:text-gray-100 sm:p-6">
+
+                    {/* No overflow-hidden here, so nothing gets cut off */}
+                    <div className="bg-white shadow-sm dark:bg-gray-800 sm:rounded-lg">
+                        <div className="p-3 text-gray-900 dark:text-gray-100 sm:p-6">
                             {/* Filters: stacked on mobile, side by side on larger screens */}
                             <div className="mb-4 flex flex-col gap-2 sm:flex-row">
                                 <TextInput
@@ -100,8 +107,81 @@ export default function Index({ auth, projects, queryParams = null, success }) {
                                 </SelectInput>
                             </div>
 
-                            <div className="overflow-auto">
-                                <table className="w-full text-left text-sm text-gray-500 rtl:text-right dark:text-gray-400">
+                            {/* ========== MOBILE: cards (hidden on md and up) ========== */}
+                            <div className="space-y-3 md:hidden">
+                                {projects.data.length === 0 && (
+                                    <p className="py-6 text-center text-gray-500 dark:text-gray-400">
+                                        No projects found.
+                                    </p>
+                                )}
+                                {projects.data.map((project) => (
+                                    <div
+                                        key={project.id}
+                                        className="rounded-lg border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-800"
+                                    >
+                                        <div className="flex gap-3">
+                                            <img
+                                                src={project.image_path}
+                                                alt={project.name}
+                                                onError={hideBrokenImage}
+                                                className="h-16 w-20 flex-shrink-0 rounded bg-gray-200 object-cover dark:bg-gray-700"
+                                            />
+                                            <div className="min-w-0 flex-1">
+                                                <Link
+                                                    href={route('project.show', project.id)}
+                                                    className="block break-words font-semibold text-gray-900 hover:underline dark:text-white"
+                                                >
+                                                    {project.name}
+                                                </Link>
+                                                <span
+                                                    className={`mt-1 inline-block whitespace-nowrap rounded px-2 py-0.5 text-xs text-white ${
+                                                        PROJECT_STATUS_CLASS_MAP[project.status]
+                                                    }`}
+                                                >
+                                                    {PROJECT_STATUS_TEXT_MAP[project.status]}
+                                                </span>
+                                            </div>
+                                            <span className="text-xs text-gray-500 dark:text-gray-400">
+                                                #{project.id}
+                                            </span>
+                                        </div>
+
+                                        <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-1 text-xs text-gray-600 dark:text-gray-400">
+                                            <dt>Created</dt>
+                                            <dd className="text-right text-gray-900 dark:text-gray-200">
+                                                {project.created_at}
+                                            </dd>
+                                            <dt>Due</dt>
+                                            <dd className="text-right text-gray-900 dark:text-gray-200">
+                                                {project.due_date}
+                                            </dd>
+                                            <dt>Created by</dt>
+                                            <dd className="text-right text-gray-900 dark:text-gray-200">
+                                                {project.createdBy.name}
+                                            </dd>
+                                        </dl>
+
+                                        <div className="mt-3 flex justify-end gap-4 border-t border-gray-200 pt-2 dark:border-gray-700">
+                                            <Link
+                                                href={route('project.edit', project.id)}
+                                                className="font-medium text-blue-600 hover:underline dark:text-blue-500"
+                                            >
+                                                Edit
+                                            </Link>
+                                            <button
+                                                onClick={() => deleteProject(project)}
+                                                className="font-medium text-red-600 hover:underline dark:text-red-500"
+                                            >
+                                                Delete
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* ========== DESKTOP: table (hidden below md) ========== */}
+                            <div className="hidden overflow-x-auto md:block">
+                                <table className="w-full table-auto text-left text-sm text-gray-500 rtl:text-right dark:text-gray-400">
                                     <thead className="border-b-2 border-gray-500 bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
                                         <tr className="text-nowrap">
                                             <TableHeading
@@ -160,11 +240,12 @@ export default function Index({ auth, projects, queryParams = null, success }) {
                                                     <img
                                                         src={project.image_path}
                                                         alt={project.name}
-                                                        className="max-w-none"
-                                                        style={{ width: 60 }}
+                                                        onError={hideBrokenImage}
+                                                        className="h-12 w-16 max-w-none rounded bg-gray-200 object-cover dark:bg-gray-700"
                                                     />
                                                 </td>
-                                                <td className="whitespace-nowrap px-3 py-2 text-gray-900 hover:underline dark:text-white">
+                                                {/* Name can wrap onto several lines, so the table stays narrow */}
+                                                <td className="min-w-[10rem] px-3 py-2 text-gray-900 hover:underline dark:text-white">
                                                     <Link href={route('project.show', project.id)}>
                                                         {project.name}
                                                     </Link>
@@ -184,10 +265,10 @@ export default function Index({ auth, projects, queryParams = null, success }) {
                                                 <td className="text-nowrap px-3 py-2">
                                                     {project.due_date}
                                                 </td>
-                                                <td className="whitespace-nowrap px-3 py-2">
+                                                <td className="px-3 py-2">
                                                     {project.createdBy.name}
                                                 </td>
-                                                <td className="text-nowrap px-3 py-2">
+                                                <td className="text-nowrap px-3 py-2 text-right">
                                                     <Link
                                                         href={route('project.edit', project.id)}
                                                         className="mx-1 font-medium text-blue-600 hover:underline dark:text-blue-500"
@@ -206,6 +287,7 @@ export default function Index({ auth, projects, queryParams = null, success }) {
                                     </tbody>
                                 </table>
                             </div>
+
                             <Pagination Links={projects.meta.links} />
                         </div>
                     </div>
