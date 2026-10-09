@@ -25,7 +25,7 @@ class UpdateProjectRequest extends FormRequest
     {
         return [
             "name"=>['required','max:244'],
-            "image"=>['nullable','image'],
+           'image' => ['nullable', 'image', 'max:5120'], 
             "description"=>['nullable','string'],
             "due_date"=>['nullable','date'],
             "status"=>['required',Rule::in(['pending',

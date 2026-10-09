@@ -14,4 +14,6 @@ COPY . .
 RUN composer install --no-dev --optimize-autoloader
 RUN npm install && npm run build && rm -rf node_modules
 
-CMD php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=${PORT:-10000}
+COPY docker/php/uploads.ini /usr/local/etc/php/conf.d/uploads.ini
+
+CMD php artisan storage:link ; php artisan migrate --force && php -d upload_max_filesize=20M -d post_max_size=25M artisan serve --host=0.0.0.0 --port=${PORT:-10000}
