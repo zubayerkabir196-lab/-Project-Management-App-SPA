@@ -10,6 +10,8 @@ use App\Http\Requests\UpdateProjectRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Database\Eloquent\Builder;
 
 class ProjectController extends Controller
 {
@@ -98,6 +100,7 @@ class ProjectController extends Controller
      */
     public function edit(Project $project)
     {
+        Gate::authorize('update', $project);
         return inertia('Project/Edit',[
             'project'=>new ProjectResource($project),
         ]);
@@ -108,6 +111,7 @@ class ProjectController extends Controller
      */
     public function update(UpdateProjectRequest $request, Project $project)
     {
+        Gate::authorize('update', $project);
         $data = $request->validated();
         $image = $data['image'] ?? null;
         $data['updated_by'] = Auth::id();
@@ -130,6 +134,7 @@ class ProjectController extends Controller
      */
     public function destroy(Project $project)
     {
+        Gate::authorize('delete', $project);
         $name= $project->name;
         $project->delete();
         if ($project->image_path) {
